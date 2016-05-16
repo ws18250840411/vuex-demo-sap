@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <span>
         <button @click="increment">Increment +1</button>
-    </div>
+    </span>
 </template>
 
 <script>
