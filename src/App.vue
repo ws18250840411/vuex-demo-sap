@@ -1,24 +1,33 @@
 <template>
     <div>
-        <h1>vuex-demo</h1>
-        <Display></Display>
-        <Increment></Increment>
+        <com-header v-bind:my-page="$route.name"></com-header>
+         <transition name="fade" mode="out-in">
+                <router-view></router-view>
+            </transition>
+        <com-footer v-bind:my-page="page"></com-footer>
     </div>
 </template>
-
+<style>
+    body{
+        background-color:#fff;
+    }
+</style>
 <script>
-    import Display from './Display.vue'
-    import Increment from './Increment.vue'
-    import store from './vuex/store'
 
-    export default {
-        components: {
-            Display,
-            Increment
+import Header from './components/header';
+import Footer from './components/footer';
+import Index from './views/index';
+// require('./css/app.scss');
+    export default{
+        data(){
+            return {
+                page:'index'
+            }
         },
-        store
+        components:{
+            comHeader:Header,
+            comFooter:Footer,
+            comIndex:Index
+        }
     }
 </script>
-
-<style>
-</style>

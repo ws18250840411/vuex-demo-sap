@@ -1,0 +1,154 @@
+"use strict";
+
+var url = require("url");
+var stripAnsi = require("strip-ansi");
+var socket = require("./socket");
+var overlay = require("./overlay");
+
+function getCurrentScriptSource() {
+	if (document.currentScript) return document.currentScript.getAttribute("src");
+
+	var scriptElements = document.scripts || [];
+	var currentScript = scriptElements[scriptElements.length - 1];
+	if (currentScript) return currentScript.getAttribute("src");
+
+	throw new Error("[WDS] Failed to get current script source");
+}
+
+var urlParts;
+if (typeof __resourceQuery === "string" && __resourceQuery) {
+	urlParts = url.parse(__resourceQuery.substr(1));
+} else {
+	var scriptHost = getCurrentScriptSource();
+	scriptHost = scriptHost.replace(/\/[^\/]+$/, "");
+	urlParts = url.parse(scriptHost ? scriptHost : "/", false, true);
+}
+
+var _hot = false;
+var initial = true;
+var currentHash = "";
+var _logLevel = "info";
+var useWarningOverlay = false;
+var useErrorOverlay = false;
+
+function log(level, msg) {
+	if (_logLevel === "info" && level === "info") return console.log(msg);
+	if (["info", "warning"].indexOf(_logLevel) >= 0 && level === "warning") return console.warn(msg);
+	if (["info", "warning", "error"].indexOf(_logLevel) >= 0 && level === "error") return console.error(msg);
+}
+
+function sendMsg(type, data) {
+	if (typeof self !== "undefined") {
+		self.postMessage({
+			type: "webpack" + type,
+			data: data
+		}, "*");
+	}
+}
+
+var onSocketMsg = {
+	hot: function hot() {
+		_hot = true;
+		log("info", "[WDS] Hot Module Replacement enabled.");
+	},
+	invalid: function invalid() {
+		log("info", "[WDS] App updated. Recompiling...");
+		sendMsg("Invalid");
+	},
+	hash: function hash(_hash) {
+		currentHash = _hash;
+	},
+	"still-ok": function stillOk() {
+		log("info", "[WDS] Nothing changed.");
+		if (useWarningOverlay || useErrorOverlay) overlay.clear();
+		sendMsg("StillOk");
+	},
+	"log-level": function logLevel(level) {
+		_logLevel = level;
+	},
+	"overlay": function overlay(_overlay) {
+		if (typeof document !== "undefined") {
+			if (typeof _overlay === "boolean") {
+				useWarningOverlay = _overlay;
+				useErrorOverlay = _overlay;
+			} else if (_overlay) {
+				useWarningOverlay = _overlay.warnings;
+				useErrorOverlay = _overlay.errors;
+			}
+		}
+	},
+	ok: function ok() {
+		sendMsg("Ok");
+		if (useWarningOverlay || useErrorOverlay) overlay.clear();
+		if (initial) return initial = false;
+		reloadApp();
+	},
+	"content-changed": function contentChanged() {
+		log("info", "[WDS] Content base changed. Reloading...");
+		self.location.reload();
+	},
+	warnings: function warnings(_warnings) {
+		log("info", "[WDS] Warnings while compiling.");
+		var strippedWarnings = _warnings.map(function (warning) {
+			return stripAnsi(warning);
+		});
+		sendMsg("Warnings", strippedWarnings);
+		for (var i = 0; i < strippedWarnings.length; i++) {
+			console.warn(strippedWarnings[i]);
+		}if (useWarningOverlay) overlay.showMessage(_warnings);
+
+		if (initial) return initial = false;
+		reloadApp();
+	},
+	errors: function errors(_errors) {
+		log("info", "[WDS] Errors while compiling. Reload prevented.");
+		var strippedErrors = _errors.map(function (error) {
+			return stripAnsi(error);
+		});
+		sendMsg("Errors", strippedErrors);
+		for (var i = 0; i < strippedErrors.length; i++) {
+			console.error(strippedErrors[i]);
+		}if (useErrorOverlay) overlay.showMessage(_errors);
+	},
+	close: function close() {
+		log("error", "[WDS] Disconnected!");
+		sendMsg("Close");
+	}
+};
+
+var hostname = urlParts.hostname;
+var protocol = urlParts.protocol;
+
+if (hostname === "0.0.0.0" || hostname === "::") {
+	if (self.location.hostname && !!~self.location.protocol.indexOf("http")) {
+		hostname = self.location.hostname;
+	}
+}
+
+if (hostname && (self.location.protocol === "https:" || urlParts.hostname === "0.0.0.0")) {
+	protocol = self.location.protocol;
+}
+
+var socketUrl = url.format({
+	protocol: protocol,
+	auth: urlParts.auth,
+	hostname: hostname,
+	port: urlParts.port === "0" ? self.location.port : urlParts.port,
+	pathname: urlParts.path == null || urlParts.path === "/" ? "/sockjs-node" : urlParts.path
+});
+
+socket(socketUrl, onSocketMsg);
+
+function reloadApp() {
+	if (_hot) {
+		log("info", "[WDS] App hot update...");
+		var hotEmitter = require("webpack/hot/emitter");
+		hotEmitter.emit("webpackHotUpdate", currentHash);
+		if (typeof self !== "undefined") {
+			self.postMessage("webpackHotUpdate" + currentHash, "*");
+		}
+	} else {
+		log("info", "[WDS] App updated. Reloading...");
+		self.location.reload();
+	}
+}

@@ -1,0 +1,12 @@
+Couldn't find preset "stage-2" relative to directory "/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1"
+Error: Couldn't find preset "stage-2" relative to directory "/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1"
+    at /Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/options/option-manager.js:293:19
+    at Array.map (native)
+    at OptionManager.resolvePresets (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/options/option-manager.js:275:20)
+    at OptionManager.mergePresets (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/options/option-manager.js:264:10)
+    at OptionManager.mergeOptions (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/options/option-manager.js:249:14)
+    at OptionManager.init (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/options/option-manager.js:368:12)
+    at File.initOptions (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/index.js:216:65)
+    at new File (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/file/index.js:139:24)
+    at Pipeline.transform (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.23.1@babel-core/lib/transformation/pipeline.js:46:16)
+    at transpile (/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1/node_modules/.6.4.0@babel-loader/lib/index.js:46:20)

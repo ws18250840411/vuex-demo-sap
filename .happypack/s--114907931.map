@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/main.js"],"names":["el","components","App"],"mappings":";;AAAA;;;;AACA;;;;;;AAEA,kBAAQ;AACNA,MAAI,MADE;AAENC,cAAY,EAAEC,kBAAF;AAFN,CAAR","file":"main.js","sourceRoot":"/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1","sourcesContent":["import Vue from 'vue'\nimport App from './App.vue'\n\nnew Vue({\n  el: 'body',\n  components: { App }\n})\n"]}

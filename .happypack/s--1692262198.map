@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/main.js"],"names":["alert"],"mappings":";;AAOAA,MAAM,OAAN","file":"main.js","sourceRoot":"/Users/vincent/Desktop/wws/vuex/vuex-demo/vuex-demo1","sourcesContent":["// import Vue from 'vue'\n// import App from './App.vue'\n\n// new Vue({\n//   el: 'body',\n//   components: { App }\n// })\nalert(6666666);"]}

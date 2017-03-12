@@ -1,0 +1,36 @@
+"use strict";
+
+var SockJS = require("sockjs-client");
+
+var retries = 0;
+var sock = null;
+
+function socket(url, handlers) {
+	sock = new SockJS(url);
+
+	sock.onopen = function () {
+		retries = 0;
+	};
+
+	sock.onclose = function () {
+		if (retries === 0) handlers.close();
+
+		sock = null;
+
+		if (retries <= 10) {
+			var retryInMs = 1000 * Math.pow(2, retries) + Math.random() * 100;
+			retries += 1;
+
+			setTimeout(function () {
+				socket(url, handlers);
+			}, retryInMs);
+		}
+	};
+
+	sock.onmessage = function (e) {
+		var msg = JSON.parse(e.data);
+		if (handlers[msg.type]) handlers[msg.type](msg.data);
+	};
+}
+
+module.exports = socket;

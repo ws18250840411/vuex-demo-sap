@@ -1,0 +1,31 @@
+'use strict';
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _vuex = require('vuex');
+
+var _vuex2 = _interopRequireDefault(_vuex);
+
+var _vueRouter = require('vueRouter');
+
+var _vueRouter2 = _interopRequireDefault(_vueRouter);
+
+var _routeConfig = require('./router/route-config');
+
+var _routeConfig2 = _interopRequireDefault(_routeConfig);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+require('./css/style.scss');
+
+_vue2.default.use(_vueRouter2.default);
+
+var router = new _vueRouter2.default({
+    routes: [_routeConfig2.default],
+    linkActiveClass: 'active' });
+
+var app = new _vue2.default({
+    router: router
+}).$mount('#app');

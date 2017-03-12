@@ -1,0 +1,28 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _App = require('../App.vue');
+
+var _App2 = _interopRequireDefault(_App);
+
+var _index = require('../views/index');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _page = require('../views/page1');
+
+var _page2 = _interopRequireDefault(_page);
+
+var _page3 = require('../views/page2');
+
+var _page4 = _interopRequireDefault(_page3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+	path: '/', component: _App2.default,
+	children: [{ path: 'index', name: 'index', component: _index2.default }, { path: 'page1', name: 'page1', component: _page2.default }, { path: 'page2/:id', name: 'page2', component: _page4.default }]
+};
